@@ -1,0 +1,325 @@
+{
+  "api": {
+    "title": "Student Success Prediction API",
+    "version": "1.0.0"
+  },
+  "model": {
+    "name": "Random Forest",
+    "trained_at": "2026-10-23T08:49:39+00:00",
+    "random_state": 42,
+    "framework": "scikit-learn 1.6.1"
+  },
+  "dataset": {
+    "id": 697,
+    "name": "Predict Students' Dropout and Academic Success",
+    "url": "https://archive.ics.uci.edu/dataset/697/predict+students+dropout+and+academic+success",
+    "rows": 4424,
+    "columns": 37,
+    "target": "Target",
+    "class_counts": {
+      "Graduate": 2209,
+      "Dropout": 1421,
+      "Enrolled": 794
+    }
+  },
+  "target": {
+    "name": "Target",
+    "classes": [
+      "Dropout",
+      "Enrolled",
+      "Graduate"
+    ],
+    "class_descriptions": {
+      "Dropout": "Student is likely to drop out.",
+      "Enrolled": "Student is likely to remain enrolled.",
+      "Graduate": "Student is likely to graduate."
+    }
+  },
+  "features": [
+    {
+      "key": "admission_grade",
+      "name": "Admission grade",
+      "type": "number",
+      "min": 95,
+      "max": 200,
+      "step": 0.1,
+      "default": 126.1,
+      "example": 140.0,
+      "description": "Admission grade on the 0-200 scale.",
+      "source_column": "Admission grade"
+    },
+    {
+      "key": "age_at_enrollment",
+      "name": "Age at enrollment",
+      "type": "number",
+      "min": 17,
+      "max": 80,
+      "step": 1,
+      "default": 20,
+      "example": 20,
+      "description": "Student age (years) when enrolling.",
+      "source_column": "Age at enrollment"
+    },
+    {
+      "key": "gender",
+      "name": "Gender",
+      "type": "binary",
+      "choices": [
+        {
+          "value": 0,
+          "label": "Female"
+        },
+        {
+          "value": 1,
+          "label": "Male"
+        }
+      ],
+      "default": 0,
+      "example": 0,
+      "description": "Student gender.",
+      "source_column": "Gender"
+    },
+    {
+      "key": "tuition_fees_up_to_date",
+      "name": "Tuition fees up to date",
+      "type": "binary",
+      "choices": [
+        {
+          "value": 1,
+          "label": "Yes"
+        },
+        {
+          "value": 0,
+          "label": "No"
+        }
+      ],
+      "default": 1,
+      "example": 1,
+      "description": "Are tuition fees paid up to date?",
+      "source_column": "Tuition fees up to date"
+    },
+    {
+      "key": "scholarship_holder",
+      "name": "Scholarship holder",
+      "type": "binary",
+      "choices": [
+        {
+          "value": 0,
+          "label": "No"
+        },
+        {
+          "value": 1,
+          "label": "Yes"
+        }
+      ],
+      "default": 0,
+      "example": 0,
+      "description": "Does the student hold a scholarship?",
+      "source_column": "Scholarship holder"
+    },
+    {
+      "key": "debtor",
+      "name": "Debtor",
+      "type": "binary",
+      "choices": [
+        {
+          "value": 0,
+          "label": "No"
+        },
+        {
+          "value": 1,
+          "label": "Yes"
+        }
+      ],
+      "default": 0,
+      "example": 0,
+      "description": "Does the student have outstanding debt?",
+      "source_column": "Debtor"
+    },
+    {
+      "key": "sem1_approved",
+      "name": "1st semester units approved",
+      "type": "number",
+      "min": 0,
+      "max": 30,
+      "step": 1,
+      "default": 5,
+      "example": 7,
+      "description": "Curricular units approved in the 1st semester.",
+      "source_column": "Curricular units 1st sem (approved)"
+    },
+    {
+      "key": "sem1_grade",
+      "name": "1st semester average grade",
+      "type": "number",
+      "min": 0,
+      "max": 20,
+      "step": 0.1,
+      "default": 12.3,
+      "example": 14.0,
+      "description": "Average grade in the 1st semester (0-20).",
+      "source_column": "Curricular units 1st sem (grade)"
+    },
+    {
+      "key": "sem2_approved",
+      "name": "2nd semester units approved",
+      "type": "number",
+      "min": 0,
+      "max": 30,
+      "step": 1,
+      "default": 5,
+      "example": 7,
+      "description": "Curricular units approved in the 2nd semester.",
+      "source_column": "Curricular units 2nd sem (approved)"
+    },
+    {
+      "key": "sem2_grade",
+      "name": "2nd semester average grade",
+      "type": "number",
+      "min": 0,
+      "max": 20,
+      "step": 0.1,
+      "default": 12.2,
+      "example": 14.0,
+      "description": "Average grade in the 2nd semester (0-20).",
+      "source_column": "Curricular units 2nd sem (grade)"
+    }
+  ],
+  "example_input": {
+    "admission_grade": 140.0,
+    "age_at_enrollment": 20,
+    "gender": 0,
+    "tuition_fees_up_to_date": 1,
+    "scholarship_holder": 0,
+    "debtor": 0,
+    "sem1_approved": 7,
+    "sem1_grade": 14.0,
+    "sem2_approved": 7,
+    "sem2_grade": 14.0
+  },
+  "metrics": {
+    "test_accuracy": 0.7356,
+    "test_macro_f1": 0.6586,
+    "test_weighted_f1": 0.7281,
+    "test_size": 0.2,
+    "per_class": {
+      "Dropout": {
+        "precision": 0.7667,
+        "recall": 0.7289,
+        "f1_score": 0.7473,
+        "support": 284
+      },
+      "Enrolled": {
+        "precision": 0.4318,
+        "recall": 0.3585,
+        "f1_score": 0.3918,
+        "support": 159
+      },
+      "Graduate": {
+        "precision": 0.8012,
+        "recall": 0.8756,
+        "f1_score": 0.8368,
+        "support": 442
+      }
+    },
+    "confusion_matrix": {
+      "labels": [
+        "Dropout",
+        "Enrolled",
+        "Graduate"
+      ],
+      "matrix": [
+        [
+          207,
+          38,
+          39
+        ],
+        [
+          45,
+          57,
+          57
+        ],
+        [
+          18,
+          37,
+          387
+        ]
+      ]
+    },
+    "classification_report": {
+      "Dropout": {
+        "precision": 0.7666666666666667,
+        "recall": 0.7288732394366197,
+        "f1-score": 0.7472924187725631,
+        "support": 284.0
+      },
+      "Enrolled": {
+        "precision": 0.4318181818181818,
+        "recall": 0.3584905660377358,
+        "f1-score": 0.3917525773195876,
+        "support": 159.0
+      },
+      "Graduate": {
+        "precision": 0.8012422360248447,
+        "recall": 0.8755656108597285,
+        "f1-score": 0.8367567567567568,
+        "support": 442.0
+      },
+      "accuracy": 0.735593220338983,
+      "macro avg": {
+        "precision": 0.6665756948365643,
+        "recall": 0.6543098054446946,
+        "f1-score": 0.6586005842829691,
+        "support": 885.0
+      },
+      "weighted avg": {
+        "precision": 0.7237756978140176,
+        "recall": 0.735593220338983,
+        "f1-score": 0.728097393459558,
+        "support": 885.0
+      }
+    }
+  },
+  "cross_validation": {
+    "folds": 5,
+    "scoring": "f1_macro",
+    "results": {
+      "Logistic Regression": {
+        "accuracy_mean": 0.6888907534821278,
+        "accuracy_std": 0.016446681261864018,
+        "macro_f1_mean": 0.6542725830246046,
+        "macro_f1_std": 0.015878670708308465,
+        "weighted_f1_mean": 0.7035440897905991,
+        "weighted_f1_std": 0.014715190035253414
+      },
+      "Random Forest": {
+        "accuracy_mean": 0.7400378778797977,
+        "accuracy_std": 0.007894049119048304,
+        "macro_f1_mean": 0.6681987834619807,
+        "macro_f1_std": 0.011959312305808503,
+        "weighted_f1_mean": 0.7333236193400221,
+        "weighted_f1_std": 0.008832102377765452
+      },
+      "Gradient Boosting": {
+        "accuracy_mean": 0.7451230231982036,
+        "accuracy_std": 0.011026855956002926,
+        "macro_f1_mean": 0.6588099250547437,
+        "macro_f1_std": 0.018991255856638956,
+        "weighted_f1_mean": 0.730373901588705,
+        "weighted_f1_std": 0.014076021566840102
+      }
+    }
+  },
+  "feature_importance": {
+    "Curricular units 2nd sem (approved)": 0.1925,
+    "Curricular units 2nd sem (grade)": 0.1821,
+    "Admission grade": 0.145,
+    "Curricular units 1st sem (grade)": 0.1376,
+    "Curricular units 1st sem (approved)": 0.1191,
+    "Age at enrollment": 0.1022,
+    "Tuition fees up to date": 0.057,
+    "Scholarship holder": 0.0259,
+    "Gender": 0.0221,
+    "Debtor": 0.0166
+  }
+}

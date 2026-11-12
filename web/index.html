@@ -1,0 +1,1185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Student Success Predictor | DIT323</title>
+  <meta name="description" content="Predict student dropout, enrollment, or graduation using a machine learning REST API.">
+  <style>
+    :root {
+      --bg: #070d1b;
+      --panel: rgba(15, 23, 42, 0.72);
+      --panel-strong: rgba(15, 23, 42, 0.92);
+      --line: rgba(148, 163, 184, 0.18);
+      --text: #e6edf7;
+      --muted: #94a3b8;
+      --accent: #34d399;
+      --accent-2: #22d3ee;
+      --danger: #fb7185;
+      --warning: #fbbf24;
+      --shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+      --radius: 22px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      font-family: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+      background:
+        radial-gradient(circle at 12% 8%, rgba(34, 211, 238, 0.16), transparent 34%),
+        radial-gradient(circle at 88% 0%, rgba(52, 211, 153, 0.14), transparent 30%),
+        radial-gradient(circle at 70% 92%, rgba(129, 140, 248, 0.12), transparent 36%),
+        var(--bg);
+      background-attachment: fixed;
+      line-height: 1.5;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image: linear-gradient(rgba(148, 163, 184, 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(148, 163, 184, 0.035) 1px, transparent 1px);
+      background-size: 44px 44px;
+      mask-image: radial-gradient(circle at 50% 20%, black, transparent 75%);
+    }
+
+    .shell {
+      position: relative;
+      width: min(1180px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: 28px 0 56px;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 46px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+    }
+
+    .brand-mark {
+      display: grid;
+      place-items: center;
+      width: 42px;
+      height: 42px;
+      border-radius: 13px;
+      color: #042f2e;
+      background: linear-gradient(135deg, var(--accent-2), var(--accent));
+      box-shadow: 0 10px 30px rgba(52, 211, 153, 0.28);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .brand small {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      padding: 9px 14px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.65);
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #64748b;
+      box-shadow: 0 0 0 4px rgba(100, 116, 139, 0.16);
+    }
+
+    .status-pill.online .status-dot {
+      background: var(--accent);
+      box-shadow: 0 0 0 4px rgba(52, 211, 153, 0.16);
+    }
+
+    .status-pill.offline .status-dot {
+      background: var(--danger);
+      box-shadow: 0 0 0 4px rgba(251, 113, 133, 0.16);
+    }
+
+    .hero { margin-bottom: 34px; max-width: 880px; }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 14px;
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 26px;
+      height: 1px;
+      background: currentColor;
+    }
+
+    h1 {
+      margin: 0 0 16px;
+      font-size: clamp(2.2rem, 5vw, 3.65rem);
+      line-height: 1.05;
+      letter-spacing: -0.035em;
+    }
+
+    h1 span {
+      background: linear-gradient(100deg, #f8fafc 10%, var(--accent-2) 55%, var(--accent) 95%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .hero p {
+      margin: 0 0 8px;
+      max-width: 760px;
+      color: #b7c4d6;
+      font-size: 1.02rem;
+    }
+
+    .hero .thai {
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+      margin-top: 22px;
+    }
+
+    .chip {
+      padding: 7px 12px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.55);
+      color: #cbd5e1;
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .chip strong { color: var(--accent); font-weight: 700; }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.25fr) minmax(330px, 0.85fr);
+      gap: 22px;
+      align-items: start;
+    }
+
+    .card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+    }
+
+    .form-card { padding: 28px; }
+
+    .card-heading {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 22px;
+    }
+
+    .card-heading h2,
+    .result-title {
+      margin: 0 0 5px;
+      font-size: 1.08rem;
+      letter-spacing: -0.01em;
+    }
+
+    .card-heading p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.83rem;
+    }
+
+    .step-badge {
+      display: grid;
+      place-items: center;
+      flex: 0 0 auto;
+      width: 34px;
+      height: 34px;
+      border: 1px solid rgba(52, 211, 153, 0.35);
+      border-radius: 10px;
+      background: rgba(52, 211, 153, 0.1);
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .fields {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px 16px;
+    }
+
+    .field { display: flex; flex-direction: column; gap: 7px; min-width: 0; }
+
+    .field-label {
+      color: #dbe5f1;
+      font-size: 0.78rem;
+      font-weight: 650;
+      letter-spacing: 0.01em;
+    }
+
+    .field-hint {
+      color: #7f8ea3;
+      font-size: 0.7rem;
+      line-height: 1.4;
+    }
+
+    input[type="number"] {
+      width: 100%;
+      height: 43px;
+      padding: 0 12px;
+      border: 1px solid rgba(148, 163, 184, 0.22);
+      border-radius: 11px;
+      background: rgba(2, 6, 23, 0.55);
+      color: var(--text);
+      font: inherit;
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+    }
+
+    input[type="number"]:hover { border-color: rgba(148, 163, 184, 0.4); }
+
+    input[type="number"]:focus {
+      border-color: rgba(52, 211, 153, 0.75);
+      background: rgba(2, 6, 23, 0.75);
+      box-shadow: 0 0 0 3px rgba(52, 211, 153, 0.13);
+    }
+
+    .segmented {
+      display: grid;
+      grid-auto-flow: column;
+      grid-auto-columns: 1fr;
+      gap: 3px;
+      height: 43px;
+      padding: 3px;
+      border: 1px solid rgba(148, 163, 184, 0.22);
+      border-radius: 11px;
+      background: rgba(2, 6, 23, 0.55);
+    }
+
+    .seg-option { position: relative; display: flex; min-width: 0; }
+
+    .seg-option input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .seg-option span {
+      display: flex;
+      flex: 1;
+      align-items: center;
+      justify-content: center;
+      padding: 0 8px;
+      border-radius: 8px;
+      color: var(--muted);
+      font-size: 0.78rem;
+      font-weight: 650;
+      cursor: pointer;
+      transition: background 0.18s ease, color 0.18s ease, box-shadow 0.18s ease;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .seg-option span:hover { color: #dbe5f1; }
+
+    .seg-option input:checked + span {
+      background: linear-gradient(135deg, rgba(52, 211, 153, 0.2), rgba(34, 211, 238, 0.16));
+      color: #ecfdf5;
+      box-shadow: inset 0 0 0 1px rgba(52, 211, 153, 0.38);
+    }
+
+    .seg-option input:focus-visible + span {
+      box-shadow: 0 0 0 3px rgba(52, 211, 153, 0.2);
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 26px;
+      padding-top: 22px;
+      border-top: 1px solid var(--line);
+    }
+
+    button {
+      font: inherit;
+      border: 0;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease,
+        border-color 0.15s ease, background 0.15s ease;
+    }
+
+    button:active { transform: translateY(1px); }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      min-height: 46px;
+      padding: 0 22px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--accent-2), var(--accent));
+      color: #032b26;
+      font-size: 0.88rem;
+      font-weight: 800;
+      box-shadow: 0 12px 30px rgba(52, 211, 153, 0.24);
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      box-shadow: 0 16px 36px rgba(52, 211, 153, 0.34);
+      transform: translateY(-1px);
+    }
+
+    .btn-primary:disabled { cursor: wait; opacity: 0.65; }
+
+    .btn-ghost {
+      min-height: 46px;
+      padding: 0 18px;
+      border: 1px solid rgba(148, 163, 184, 0.24);
+      border-radius: 12px;
+      background: rgba(15, 23, 42, 0.45);
+      color: #cbd5e1;
+      font-size: 0.82rem;
+      font-weight: 650;
+    }
+
+    .btn-ghost:hover {
+      border-color: rgba(52, 211, 153, 0.45);
+      color: #ecfdf5;
+      background: rgba(52, 211, 153, 0.07);
+    }
+
+    .result-card {
+      padding: 26px;
+      position: sticky;
+      top: 22px;
+      min-height: 430px;
+      overflow: hidden;
+    }
+
+    .result-card::after {
+      content: "";
+      position: absolute;
+      inset: auto -30% -55% auto;
+      width: 280px;
+      height: 280px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(52, 211, 153, 0.14), transparent 68%);
+      pointer-events: none;
+    }
+
+    .result-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .result-head .mini {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.78rem;
+    }
+
+    .state { position: relative; z-index: 1; }
+
+    .empty-state {
+      display: grid;
+      place-items: center;
+      align-content: center;
+      gap: 14px;
+      min-height: 320px;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .empty-icon {
+      display: grid;
+      place-items: center;
+      width: 64px;
+      height: 64px;
+      border: 1px dashed rgba(148, 163, 184, 0.35);
+      border-radius: 20px;
+      color: #64748b;
+      background: rgba(2, 6, 23, 0.35);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+    }
+
+    .empty-state h3 { margin: 0; font-size: 0.98rem; }
+
+    .empty-state p {
+      margin: 0;
+      max-width: 260px;
+      color: var(--muted);
+      font-size: 0.82rem;
+    }
+
+    .loading-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      min-height: 340px;
+      text-align: center;
+    }
+
+    .spinner {
+      width: 42px;
+      height: 42px;
+      border: 3px solid rgba(148, 163, 184, 0.18);
+      border-top-color: var(--accent);
+      border-right-color: var(--accent-2);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .loading-state p { margin: 0; color: var(--muted); font-size: 0.85rem; }
+
+    .error-state {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 10px;
+      min-height: 300px;
+      padding: 24px;
+      border: 1px solid rgba(251, 113, 133, 0.28);
+      border-radius: 14px;
+      background: rgba(251, 113, 133, 0.07);
+      margin-top: 10px;
+    }
+
+    .error-state strong { color: #fecdd3; font-size: 0.92rem; }
+    .error-state p { margin: 0; color: #fda4af; font-size: 0.82rem; }
+
+    .result-state { animation: rise 0.35s ease both; }
+
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .result-label {
+      color: var(--muted);
+      font-size: 0.69rem;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    .predicted {
+      margin: 4px 0 0;
+      font-size: clamp(2rem, 5vw, 2.9rem);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      color: var(--result-color, var(--accent));
+      text-shadow: 0 0 32px color-mix(in srgb, var(--result-color, var(--accent)) 28%, transparent);
+    }
+
+    .result-description {
+      margin: 7px 0 18px;
+      color: #b7c4d6;
+      font-size: 0.85rem;
+    }
+
+    .confidence-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 9px;
+      color: var(--muted);
+      font-size: 0.76rem;
+    }
+
+    .confidence-row strong { color: var(--text); font-size: 0.86rem; }
+
+    .confidence-track {
+      height: 7px;
+      overflow: hidden;
+      margin-bottom: 25px;
+      border-radius: 999px;
+      background: rgba(148, 163, 184, 0.14);
+    }
+
+    .confidence-fill {
+      height: 100%;
+      width: 0;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--accent-2), var(--accent));
+      transition: width 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .prob-title {
+      margin: 0 0 12px;
+      color: var(--muted);
+      font-size: 0.69rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    .prob-row { margin-bottom: 13px; }
+
+    .prob-meta {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 5px;
+      font-size: 0.78rem;
+    }
+
+    .prob-name { color: #dbe5f1; font-weight: 650; }
+    .prob-value { color: var(--muted); font-variant-numeric: tabular-nums; }
+
+    .prob-row.is-top .prob-name { color: var(--bar-color, var(--accent)); }
+    .prob-row.is-top .prob-value { color: #e6edf7; font-weight: 700; }
+
+    .prob-track {
+      height: 8px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: rgba(148, 163, 184, 0.13);
+    }
+
+    .prob-fill {
+      height: 100%;
+      width: 0;
+      border-radius: inherit;
+      background: linear-gradient(90deg,
+        color-mix(in srgb, var(--bar-color, var(--accent)) 55%, #0f172a),
+        var(--bar-color, var(--accent)));
+      transition: width 0.75s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .disclaimer {
+      margin: 20px 0 0;
+      padding-top: 15px;
+      border-top: 1px solid var(--line);
+      color: #7f8ea3;
+      font-size: 0.7rem;
+      line-height: 1.5;
+    }
+
+    .about-card {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 28px;
+      align-items: center;
+      margin-top: 22px;
+      padding: 24px 28px;
+    }
+
+    .about-card h2 { margin: 0 0 6px; font-size: 1rem; }
+    .about-card p { margin: 0; color: var(--muted); font-size: 0.82rem; max-width: 760px; }
+
+    .about-card a {
+      color: var(--accent);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(52, 211, 153, 0.35);
+    }
+
+    .about-card a:hover { border-bottom-color: var(--accent); }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+
+    .legend span {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--muted);
+      font-size: 0.72rem;
+      white-space: nowrap;
+    }
+
+    .legend i {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--legend-color, #64748b);
+    }
+
+    footer {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 28px;
+      padding: 0 4px;
+      color: #64748b;
+      font-size: 0.72rem;
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 28px;
+      z-index: 20;
+      padding: 10px 18px;
+      border: 1px solid rgba(52, 211, 153, 0.3);
+      border-radius: 999px;
+      background: rgba(8, 22, 32, 0.95);
+      color: #d1fae5;
+      font-size: 0.78rem;
+      font-weight: 650;
+      box-shadow: var(--shadow);
+      opacity: 0;
+      pointer-events: none;
+      transform: translate(-50%, 10px);
+      transition: opacity 0.22s ease, transform 0.22s ease;
+    }
+
+    .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+    [hidden] { display: none !important; }
+
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      .result-card { position: static; min-height: 0; }
+      .about-card { grid-template-columns: 1fr; }
+      .legend { justify-content: flex-start; }
+    }
+
+    @media (max-width: 560px) {
+      .shell { width: min(100% - 24px, 1180px); padding-top: 18px; }
+      header { margin-bottom: 30px; }
+      .form-card, .result-card, .about-card { padding: 20px; }
+      .fields { grid-template-columns: 1fr; }
+      .actions button { flex: 1 1 100%; }
+      .hero p { font-size: 0.94rem; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header>
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">AI</div>
+        <div>
+          D I T 3 2 3
+          <small>Artificial Intelligence as a Service</small>
+        </div>
+      </div>
+      <div class="status-pill" id="apiStatus">
+        <span class="status-dot" aria-hidden="true"></span>
+        <span id="apiStatusText">Connecting to API</span>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="eyebrow">Machine Learning REST API</div>
+        <h1>Student Success <span>Predictor</span></h1>
+        <p>
+          Enter a student's academic and enrolment profile to estimate whether they
+          will drop out, remain enrolled, or graduate. Predictions are served by a
+          scikit-learn pipeline trained on the UCI student success dataset.
+        </p>
+        <p class="thai">ระบบทำนายผลการเรียนของนักศึกษา (Dropout / Enrolled / Graduate)</p>
+        <div class="meta-row" id="metaRow">
+          <span class="chip">Loading model details...</span>
+        </div>
+      </section>
+
+      <div class="layout">
+        <section class="card form-card" aria-labelledby="formTitle">
+          <div class="card-heading">
+            <div>
+              <h2 id="formTitle">Student profile</h2>
+              <p>All ten features are required. Values are validated by the API.</p>
+            </div>
+            <div class="step-badge" aria-hidden="true">01</div>
+          </div>
+          <form id="predictForm" novalidate>
+            <div class="fields" id="formFields"></div>
+            <div class="actions">
+              <button type="submit" class="btn-primary" id="submitBtn">
+                <span class="btn-label">Predict outcome</span>
+              </button>
+              <button type="button" class="btn-ghost" id="exampleBtn">Fill example</button>
+              <button type="button" class="btn-ghost" id="resetBtn">Reset</button>
+            </div>
+          </form>
+        </section>
+
+        <aside class="card result-card" aria-labelledby="resultTitle">
+          <div class="result-head">
+            <div>
+              <h2 class="result-title" id="resultTitle">Prediction</h2>
+              <p class="mini">Multiclass probability estimate</p>
+            </div>
+            <div class="step-badge" aria-hidden="true">02</div>
+          </div>
+
+          <div class="state" aria-live="polite">
+            <div class="empty-state" id="emptyState">
+              <div class="empty-icon" aria-hidden="true">MODEL</div>
+              <h3>No prediction yet</h3>
+              <p>Complete the student profile and press Predict outcome to see the result.</p>
+            </div>
+
+            <div class="loading-state" id="loadingState" hidden>
+              <div class="spinner" aria-hidden="true"></div>
+              <p>Scoring the student profile...</p>
+            </div>
+
+            <div class="error-state" id="errorState" hidden role="alert">
+              <strong>Prediction failed</strong>
+              <p id="errorMessage">Please check the form values and try again.</p>
+            </div>
+
+            <div class="result-state" id="resultState" hidden>
+              <div class="result-label">Predicted outcome</div>
+              <div class="predicted" id="predictedLabel">-</div>
+              <p class="result-description" id="resultDescription"></p>
+
+              <div class="confidence-row">
+                <span>Model confidence</span>
+                <strong id="confidenceValue">0%</strong>
+              </div>
+              <div class="confidence-track">
+                <div class="confidence-fill" id="confidenceFill"></div>
+              </div>
+
+              <p class="prob-title">Class probabilities</p>
+              <div id="probabilities"></div>
+
+              <p class="disclaimer" id="disclaimer">
+                This estimate comes from a statistical model trained on historical data.
+                It supports human decisions and is not academic advice or a guarantee.
+              </p>
+            </div>
+          </div>
+        </aside>
+      </div>
+
+      <section class="card about-card" aria-labelledby="aboutTitle">
+        <div>
+          <h2 id="aboutTitle">About the model</h2>
+          <p>
+            Dataset:
+            <a href="https://archive.ics.uci.edu/dataset/697/predict+students+dropout+and+academic+success"
+               target="_blank" rel="noreferrer noopener">UCI Predict Students' Dropout and Academic Success</a>.
+            A preprocessing pipeline and classifier are serialised together, so the API
+            receives raw values and returns class probabilities for all three outcomes.
+          </p>
+        </div>
+        <div class="legend" id="legend"></div>
+      </section>
+    </main>
+
+    <footer>
+      <span>DIT323 - Artificial Intelligence as a Service</span>
+      <span>Prototype for academic demonstration only</span>
+    </footer>
+  </div>
+
+  <div class="toast" id="toast" role="status"></div>
+
+  <script>
+    const CLASS_COLORS = {
+      Dropout: "#fb7185",
+      Enrolled: "#fbbf24",
+      Graduate: "#34d399"
+    };
+
+    const state = { metadata: null };
+
+    const $ = (id) => document.getElementById(id);
+    const form = $("predictForm");
+    const fieldsEl = $("formFields");
+    const submitBtn = $("submitBtn");
+    const emptyState = $("emptyState");
+    const loadingState = $("loadingState");
+    const errorState = $("errorState");
+    const resultState = $("resultState");
+    const toast = $("toast");
+
+    function colorFor(label) {
+      return CLASS_COLORS[label] || "#a5b4fc";
+    }
+
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add("show");
+      window.clearTimeout(showToast.timer);
+      showToast.timer = window.setTimeout(() => toast.classList.remove("show"), 2200);
+    }
+
+    function setView(view) {
+      emptyState.hidden = view !== "empty";
+      loadingState.hidden = view !== "loading";
+      errorState.hidden = view !== "error";
+      resultState.hidden = view !== "result";
+    }
+
+    function buildInput(field) {
+      if (field.type === "binary") {
+        const group = document.createElement("div");
+        group.className = "segmented";
+        group.setAttribute("role", "radiogroup");
+        group.setAttribute("aria-label", field.name);
+
+        field.choices.forEach((choice) => {
+          const option = document.createElement("label");
+          option.className = "seg-option";
+
+          const input = document.createElement("input");
+          input.type = "radio";
+          input.name = field.key;
+          input.value = String(choice.value);
+          input.checked = choice.value === field.default;
+          input.required = true;
+
+          const text = document.createElement("span");
+          text.textContent = choice.label;
+
+          option.append(input, text);
+          group.append(option);
+        });
+        return group;
+      }
+
+      const input = document.createElement("input");
+      input.type = "number";
+      input.name = field.key;
+      input.value = String(field.default);
+      input.min = String(field.min);
+      input.max = String(field.max);
+      input.step = String(field.step);
+      input.required = true;
+      input.inputMode = field.step < 1 ? "decimal" : "numeric";
+      return input;
+    }
+
+    function buildForm(features) {
+      fieldsEl.innerHTML = "";
+      features.forEach((field) => {
+        const wrapper = document.createElement("div");
+        wrapper.className = "field";
+
+        const label = document.createElement("label");
+        label.className = "field-label";
+        label.textContent = field.name;
+        if (field.type !== "binary") label.htmlFor = `field-${field.key}`;
+
+        const input = buildInput(field);
+        if (field.type !== "binary") input.id = `field-${field.key}`;
+
+        const hint = document.createElement("span");
+        hint.className = "field-hint";
+        hint.textContent = field.type === "binary"
+          ? field.description
+          : `${field.description} Range ${field.min}-${field.max}.`;
+
+        wrapper.append(label, input, hint);
+        fieldsEl.append(wrapper);
+      });
+    }
+
+    function renderMeta(metadata) {
+      const metrics = metadata.metrics || {};
+      const accuracy = typeof metrics.test_accuracy === "number"
+        ? `${(metrics.test_accuracy * 100).toFixed(1)}%`
+        : "n/a";
+      const macroF1 = typeof metrics.test_macro_f1 === "number"
+        ? metrics.test_macro_f1.toFixed(3)
+        : "n/a";
+      const chips = [
+        `Model: ${metadata.model.name}`,
+        `Test accuracy: ${accuracy}`,
+        `Macro-F1: ${macroF1}`,
+        `${metadata.dataset.rows.toLocaleString()} students`,
+        `${metadata.features.length} input features`
+      ];
+
+      $("metaRow").innerHTML = "";
+      chips.forEach((text) => {
+        const chip = document.createElement("span");
+        chip.className = "chip";
+        chip.textContent = text;
+        $("metaRow").append(chip);
+      });
+
+      $("legend").innerHTML = "";
+      (metadata.target.classes || []).forEach((label) => {
+        const item = document.createElement("span");
+        const dot = document.createElement("i");
+        dot.style.setProperty("--legend-color", colorFor(label));
+        item.append(dot, document.createTextNode(label));
+        $("legend").append(item);
+      });
+
+      const modelName = metadata.model.name;
+      $("disclaimer").textContent =
+        `Estimate produced by a ${modelName} pipeline trained on historical student records. ` +
+        "It supports human decisions and is not academic advice or a guarantee.";
+    }
+
+    function setExample(values) {
+      if (!state.metadata) return;
+      state.metadata.features.forEach((field) => {
+        const value = values[field.key];
+        if (value === undefined) return;
+        if (field.type === "binary") {
+          const input = form.querySelector(`input[name="${field.key}"][value="${value}"]`);
+          if (input) input.checked = true;
+        } else {
+          const input = form.elements[field.key];
+          if (input) input.value = String(value);
+        }
+      });
+    }
+
+    function collectPayload() {
+      const payload = {};
+      for (const field of state.metadata.features) {
+        if (field.type === "binary") {
+          const selected = form.querySelector(`input[name="${field.key}"]:checked`);
+          if (!selected) throw new Error(`Choose a value for ${field.name}.`);
+          payload[field.key] = Number(selected.value);
+        } else {
+          const raw = form.elements[field.key].value;
+          if (raw === "") throw new Error(`Enter a value for ${field.name}.`);
+          const value = Number(raw);
+          if (!Number.isFinite(value)) throw new Error(`${field.name} must be a number.`);
+          if (value < field.min || value > field.max) {
+            throw new Error(`${field.name} must be between ${field.min} and ${field.max}.`);
+          }
+          payload[field.key] = field.step < 1 ? value : Math.round(value);
+        }
+      }
+      return payload;
+    }
+
+    function formatError(data, status) {
+      if (data && Array.isArray(data.detail)) {
+        return data.detail.map((item) => item.msg).join(" ");
+      }
+      if (data && typeof data.detail === "string") return data.detail;
+      return `Request failed with status ${status}.`;
+    }
+
+    function renderResult(data) {
+      const label = data.predicted_label;
+      const color = colorFor(label);
+      resultState.style.setProperty("--result-color", color);
+
+      $("predictedLabel").textContent = label;
+      const descriptions = (state.metadata.target.class_descriptions) || {};
+      $("resultDescription").textContent = descriptions[label] || "";
+
+      const confidence = Math.max(0, Math.min(1, data.confidence));
+      $("confidenceValue").textContent = `${(confidence * 100).toFixed(1)}%`;
+      $("confidenceFill").style.width = "0%";
+
+      const entries = Object.entries(data.probabilities)
+        .sort((a, b) => b[1] - a[1]);
+
+      const container = $("probabilities");
+      container.innerHTML = "";
+      entries.forEach(([cls, probability]) => {
+        const row = document.createElement("div");
+        row.className = "prob-row" + (cls === label ? " is-top" : "");
+        row.style.setProperty("--bar-color", colorFor(cls));
+
+        const meta = document.createElement("div");
+        meta.className = "prob-meta";
+        const name = document.createElement("span");
+        name.className = "prob-name";
+        name.textContent = cls;
+        const value = document.createElement("span");
+        value.className = "prob-value";
+        value.textContent = `${(probability * 100).toFixed(1)}%`;
+        meta.append(name, value);
+
+        const track = document.createElement("div");
+        track.className = "prob-track";
+        const fill = document.createElement("div");
+        fill.className = "prob-fill";
+        fill.style.setProperty("--bar-color", colorFor(cls));
+        track.append(fill);
+
+        row.append(meta, track);
+        container.append(row);
+
+        window.requestAnimationFrame(() => {
+          window.requestAnimationFrame(() => {
+            fill.style.width = `${Math.max(0.5, probability * 100)}%`;
+          });
+        });
+      });
+
+      setView("result");
+      window.requestAnimationFrame(() => {
+        $("confidenceFill").style.width = `${confidence * 100}%`;
+      });
+    }
+
+    async function checkHealth() {
+      const pill = $("apiStatus");
+      const text = $("apiStatusText");
+      try {
+        const response = await fetch("/health", { cache: "no-store" });
+        if (!response.ok) throw new Error("offline");
+        pill.classList.add("online");
+        pill.classList.remove("offline");
+        text.textContent = "API online";
+      } catch (error) {
+        pill.classList.add("offline");
+        pill.classList.remove("online");
+        text.textContent = "API offline";
+      }
+    }
+
+    async function init() {
+      checkHealth();
+      try {
+        const response = await fetch("/metadata", { cache: "no-store" });
+        if (!response.ok) throw new Error(`Metadata request failed (${response.status}).`);
+        const metadata = await response.json();
+        state.metadata = metadata;
+        renderMeta(metadata);
+        buildForm(metadata.features);
+        setExample(metadata.example_input || {});
+      } catch (error) {
+        setView("error");
+        $("errorMessage").textContent =
+          `Could not load model metadata. ${error.message}`;
+        $("metaRow").innerHTML = '<span class="chip">Metadata unavailable</span>';
+      }
+    }
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      if (!state.metadata) {
+        setView("error");
+        $("errorMessage").textContent = "Model metadata is still loading.";
+        return;
+      }
+
+      let payload;
+      try {
+        payload = collectPayload();
+      } catch (error) {
+        setView("error");
+        $("errorMessage").textContent = error.message;
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.querySelector(".btn-label").textContent = "Predicting...";
+      setView("loading");
+
+      try {
+        const response = await fetch("/predict", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        const data = await response.json().catch(() => null);
+        if (!response.ok) throw new Error(formatError(data, response.status));
+        renderResult(data);
+        showToast(`Prediction complete: ${data.predicted_label}`);
+      } catch (error) {
+        setView("error");
+        $("errorMessage").textContent = error.message || "Unexpected error.";
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.querySelector(".btn-label").textContent = "Predict outcome";
+      }
+    });
+
+    $("exampleBtn").addEventListener("click", () => {
+      if (!state.metadata) return;
+      setExample(state.metadata.example_input || {});
+      showToast("Example profile loaded");
+    });
+
+    $("resetBtn").addEventListener("click", () => {
+      if (!state.metadata) return;
+      form.reset();
+      state.metadata.features.forEach((field) => {
+        if (field.type === "binary") {
+          const input = form.querySelector(`input[name="${field.key}"][value="${field.default}"]`);
+          if (input) input.checked = true;
+        } else {
+          const input = form.elements[field.key];
+          if (input) input.value = String(field.default);
+        }
+      });
+      setView("empty");
+      showToast("Form reset to defaults");
+    });
+
+    init();
+  </script>
+</body>
+</html>
